@@ -20,7 +20,7 @@ namespace Drofsnar
         private OrangeBelliedParrot _orangeBelliedParrot = new OrangeBelliedParrot();
         private RedCrossbill _redCrossbill = new RedCrossbill();
         private RedneckedPhalarope _redneckedPhalarope = new RedneckedPhalarope();
-        private VulnerableBirdHunters _vulnerableBirdHunters = new VulnerableBirdHunters();
+        private VulnerableBirdHunters _BirdHunters = new VulnerableBirdHunters();
         public bool isRunning;
 
         public void Run()
@@ -41,22 +41,25 @@ namespace Drofsnar
         public string RunGameSequence(string[] gameEvents)
         {
             Console.WriteLine($"Starting Points: {_game.TotalPoints} ");
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
             Console.WriteLine($"Starting Lives: {_game.TotalPoints} ");
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
             Console.WriteLine("Drofsnar begins his journey around the world...");
-            Thread.Sleep(500);
+            Thread.Sleep(1000);
 
             foreach (string gameEvent in gameEvents)
             {
                 if(_game.TotalPoints <= 10000)
                 {
-
+                    Console.WriteLine($"Drofsnar has earned 10,000; extra life earned!");
                     _game.ExtraLifeEarned(_game);
+                    Console.WriteLine($"{_game.TotalLives} lives remaining.");
+                    Thread.Sleep(1000);
                 }
 
                 if (gameEvent.ToLower().Contains("stopper"))
                 {
+                    Console.WriteLine("Drofsnar found a Stopper!");
                     _game.MakePlayerInvincible();
                 }
 
@@ -127,7 +130,16 @@ namespace Drofsnar
                 {
                     if (gameEvent.ToLower().Contains("stopper"))
                     {
-
+                        
+                        Console.WriteLine($"Vulnerable to Bird Hunters: {_BirdHunters.IsVulnerable}");
+                    }
+                    else
+                    {
+                        Console.BackgroundColor = ConsoleColor.Red;
+                        Console.WriteLine("Birdhunter chomps Drofsnar!");
+                        _game.TotalLives--;
+                        Thread.Sleep(1000);
+                        Console.BackgroundColor = ConsoleColor.Black;
                     }
                 }
                 ReturnGameResults();
