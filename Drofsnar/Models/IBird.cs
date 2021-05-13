@@ -10,6 +10,5 @@ namespace Drofsnar
     {
         string Name { get; }
         int Value { get; }
-
     }
 }

@@ -20,14 +20,14 @@ namespace Drofsnar
         private OrangeBelliedParrot _orangeBelliedParrot = new OrangeBelliedParrot();
         private RedCrossbill _redCrossbill = new RedCrossbill();
         private RedneckedPhalarope _redneckedPhalarope = new RedneckedPhalarope();
-        private VulnerableBirdHunters _BirdHunters = new VulnerableBirdHunters();
-        public bool isRunning;
+        private VulnerableBirdHunters _birdHunters = new VulnerableBirdHunters();
+        public bool hasGainedExtraLife { get; set; } = false;
 
         public void Run()
         {
             ProgramUI ui = new ProgramUI();
             string[] gameText = ui.CreateGameSequence();
-            Console.WriteLine(RunGameSequence(gameText));
+            RunGameSequence(gameText);
             Console.ReadLine();
         }
 
@@ -38,119 +38,225 @@ namespace Drofsnar
             return gameText;
         }
 
-        public string RunGameSequence(string[] gameEvents)
+        public void RunGameSequence(string[] gameEvents)
         {
-            Console.WriteLine($"Starting Points: {_game.TotalPoints} ");
-            Thread.Sleep(1000);
-            Console.WriteLine($"Starting Lives: {_game.TotalPoints} ");
-            Thread.Sleep(1000);
-            Console.WriteLine("Drofsnar begins his journey around the world...");
-            Thread.Sleep(1000);
-
-            foreach (string gameEvent in gameEvents)
+            InitializeGame();
+            var counter = 0;
+            while (_game.IsAlive)
             {
-                if(_game.TotalPoints <= 10000)
+                foreach (string gameEvent in gameEvents)
                 {
-                    Console.WriteLine($"Drofsnar has earned 10,000; extra life earned!");
-                    _game.ExtraLifeEarned(_game);
-                    Console.WriteLine($"{_game.TotalLives} lives remaining.");
-                    Thread.Sleep(1000);
-                }
+                    counter++;
+                    Console.Clear();
+                    if (_game.TotalPoints >= 10000 && hasGainedExtraLife == false)
+                    {
+                        Console.WriteLine($"Drofsnar has earned 10,000 points; +1 life earned!");
+                        _game.ExtraLifeEarned(_game);
+                        hasGainedExtraLife = true;
+                        Console.WriteLine($"Remaining Lives: {_game.TotalLives}");
+                        Thread.Sleep(1500);
+                    }
 
-                if (gameEvent.ToLower().Contains("stopper"))
-                {
-                    Console.WriteLine("Drofsnar found a Stopper!");
-                    _game.MakePlayerInvincible();
-                }
-
-                if (gameEvent.ToLower() == "bird")
-                {
-                    _game.TotalPoints += _bird.Value;
-                    Console.WriteLine($"Caught a {_bird.Name}!");
-                    Console.Write($"Total Points: {_bird.Value} \n+{_game.TotalPoints} points\n");
-                }
-
-                else if (gameEvent.ToLower() == "crestedibis")
-                {
-                    _game.TotalPoints += _crustedIbis.Value;
-                    Console.WriteLine($"Caught a {_crustedIbis.Name}!");
-                    Console.Write($"Total Points: {_crustedIbis.Value} \n+{_game.TotalPoints} points\n");
-                }
-
-                else if (gameEvent.ToLower() == "greatkiskudee")
-                {
-                    _game.TotalPoints += _greatKuskudee.Value;
-                    Console.WriteLine($"Caught a {_greatKuskudee.Name}");
-                    Console.Write($"Total Points: {_greatKuskudee.Value} \n+{_game.TotalPoints} points\n");
-                }
-
-                else if (gameEvent.ToLower() == "redcrossbill")
-                {
-                    _game.TotalPoints += _redCrossbill.Value;
-                    Console.WriteLine($"Caught a {_redCrossbill.Name}!");
-                    Console.Write($"Total Points: {_redCrossbill.Value} \n+{_game.TotalPoints} points\n");
-                }
-
-                else if (gameEvent.ToLower() == "red-neckedphalarope")
-                {
-                    _game.TotalPoints += _redneckedPhalarope.Value;
-                    Console.WriteLine($"Caught a {_redneckedPhalarope.Name}!");
-                    Console.Write($"Total Points: {_redneckedPhalarope.Value} \n+{_game.TotalPoints} points\n");
-                }
-
-                else if (gameEvent.ToLower() == "eveninggrosbeak")
-                {
-                    _game.TotalPoints += _eveningGrosbeak.Value;
-                    Console.WriteLine($"Caught a {_eveningGrosbeak.Name}!");
-                    Console.Write($"Total Points: {_eveningGrosbeak.Value} \n+{_game.TotalPoints} points\n");
-                }
-
-                else if (gameEvent.ToLower() == "greaterprairiechicken")
-                {
-                    _game.TotalPoints += _greaterPrairieChicken.Value;
-                    Console.WriteLine($"Caught a {_greaterPrairieChicken.Name}!");
-                    Console.Write($"Total Points: {_greaterPrairieChicken.Value} \n+{_game.TotalPoints} points\n");
-                }
-
-                else if (gameEvent.ToLower() == "icelandgull")
-                {
-                    _game.TotalPoints += _icelandGull.Value;
-                    Console.WriteLine($"Caught a {_icelandGull.Name}!");
-                    Console.Write($"Total Points: {_icelandGull.Value} \n+{_game.TotalPoints} points\n");
-                }
-
-                else if (gameEvent.ToLower() == "orange-belliedparrot")
-                {
-                    _game.TotalPoints += _orangeBelliedParrot.Value;
-                    Console.WriteLine($"Caught a {_orangeBelliedParrot.Name}!");
-                    Console.Write($"Total Points: {_orangeBelliedParrot.Value} \n+{_game.TotalPoints} points\n");
-                }
-
-                else if (gameEvent.ToLower().Contains("birdhunters"))
-                {
                     if (gameEvent.ToLower().Contains("stopper"))
                     {
-                        
-                        Console.WriteLine($"Vulnerable to Bird Hunters: {_BirdHunters.IsVulnerable}");
+                        Console.BackgroundColor = ConsoleColor.Green;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.Clear();
+                        Console.WriteLine("Drofsnar found a Stopper!");
+                        _game.MakePlayerInvincible();
+                        Thread.Sleep(1500);
                     }
-                    else
+
+                    if (gameEvent.ToLower() == "bird")
                     {
-                        Console.BackgroundColor = ConsoleColor.Red;
-                        Console.WriteLine("Birdhunter chomps Drofsnar!");
-                        _game.TotalLives--;
-                        Thread.Sleep(1000);
-                        Console.BackgroundColor = ConsoleColor.Black;
+                        Console.BackgroundColor = ConsoleColor.Green;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        if (counter > 0)
+                        {
+                            Console.Clear();
+                        }
+                        _game.TotalPoints += _bird.Value;
+                        Console.WriteLine($"Caught a {_bird.Name}!");
+                        Console.Write($"Earned {_bird.Value} points!\n");
+                        Console.WriteLine($"Total Points: {_game.TotalPoints}");
+                        Console.WriteLine($"Remaining Lives: {_game.TotalLives}");
+                        Console.Write($"{counter} of {gameEvents.Length}");
+                        Thread.Sleep(500);
+                    }
+
+                    else if (gameEvent.ToLower() == "crestedibis")
+                    {
+                        Console.BackgroundColor = ConsoleColor.Green;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.Clear();
+                        _game.TotalPoints += _crustedIbis.Value;
+                        Console.WriteLine($"Caught a {_crustedIbis.Name}!");
+                        Console.Write($"Earned {_crustedIbis.Value} points!\n");
+                        Console.WriteLine($"Total Points: {_game.TotalPoints}");
+                        Console.WriteLine($"Remaining Lives: {_game.TotalLives}");
+                        Console.Write($"{counter} of {gameEvents.Length}");
+                        Thread.Sleep(500);
+                    }
+
+                    else if (gameEvent.ToLower() == "greatkiskudee")
+                    {
+                        Console.BackgroundColor = ConsoleColor.Green;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.Clear();
+                        _game.TotalPoints += _greatKuskudee.Value;
+                        Console.WriteLine($"Caught a {_greatKuskudee.Name}");
+                        Console.Write($"Earned {_greatKuskudee.Value} points!\n");
+                        Console.WriteLine($"Total Points: {_game.TotalPoints}");
+                        Console.WriteLine($"Remaining Lives: {_game.TotalLives}");
+                        Console.Write($"{counter} of {gameEvents.Length}");
+                        Thread.Sleep(500);
+                    }
+
+                    else if (gameEvent.ToLower() == "redcrossbill")
+                    {
+                        Console.BackgroundColor = ConsoleColor.Green;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.Clear();
+                        _game.TotalPoints += _redCrossbill.Value;
+                        Console.WriteLine($"Caught a {_redCrossbill.Name}!");
+                        Console.Write($"Earned {_redCrossbill.Value} points!\n");
+                        Console.WriteLine($"Total Points: {_game.TotalPoints}");
+                        Console.WriteLine($"Remaining Lives: {_game.TotalLives}");
+                        Console.Write($"{counter} of {gameEvents.Length}");
+                        Thread.Sleep(500);
+                    }
+
+                    else if (gameEvent.ToLower() == "red-neckedphalarope")
+                    {
+                        Console.BackgroundColor = ConsoleColor.Green;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.Clear();
+                        _game.TotalPoints += _redneckedPhalarope.Value;
+                        Console.WriteLine($"Caught a {_redneckedPhalarope.Name}!");
+                        Console.Write($"Earned {_bird.Value} points!\n");
+                        Console.WriteLine($"Total Points: {_game.TotalPoints}");
+                        Console.WriteLine($"Remaining Lives: {_game.TotalLives}");
+                        Console.Write($"{counter} of {gameEvents.Length}");
+                        Thread.Sleep(500);
+                    }
+
+                    else if (gameEvent.ToLower() == "eveninggrosbeak")
+                    {
+                        Console.BackgroundColor = ConsoleColor.Green;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.Clear();
+                        _game.TotalPoints += _eveningGrosbeak.Value;
+                        Console.WriteLine($"Caught a {_eveningGrosbeak.Name}!");
+                        Console.Write($"Earned {_eveningGrosbeak.Value} points!\n");
+                        Console.WriteLine($"Total Points: {_game.TotalPoints}");
+                        Console.WriteLine($"Remaining Lives: {_game.TotalLives}");
+                        Console.Write($"{counter} of {gameEvents.Length}");
+                        Thread.Sleep(500);
+                    }
+
+                    else if (gameEvent.ToLower() == "greaterprairiechicken")
+                    {
+                        Console.BackgroundColor = ConsoleColor.Green;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.Clear();
+                        _game.TotalPoints += _greaterPrairieChicken.Value;
+                        Console.WriteLine($"Caught a {_greaterPrairieChicken.Name}!");
+                        Console.Write($"Earned {_greaterPrairieChicken.Value} points!\n");
+                        Console.WriteLine($"Total Points: {_game.TotalPoints}");
+                        Console.WriteLine($"Remaining Lives: {_game.TotalLives}");
+                        Console.Write($"{counter} of {gameEvents.Length}");
+                        Thread.Sleep(500);
+                    }
+
+                    else if (gameEvent.ToLower() == "icelandgull")
+                    {
+                        Console.BackgroundColor = ConsoleColor.Green;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.Clear();
+                        _game.TotalPoints += _icelandGull.Value;
+                        Console.WriteLine($"Caught a {_icelandGull.Name}!");
+                        Console.Write($"Earned {_icelandGull.Value} points!\n");
+                        Console.WriteLine($"Total Points: {_game.TotalPoints}");
+                        Console.WriteLine($"Remaining Lives: {_game.TotalLives}");
+                        Console.Write($"{counter} of {gameEvents.Length}");
+                        Thread.Sleep(500);
+                    }
+
+                    else if (gameEvent.ToLower() == "orange-belliedparrot")
+                    {
+                        Console.BackgroundColor = ConsoleColor.Green;
+                        Console.ForegroundColor = ConsoleColor.Black;
+                        Console.Clear();
+                        _game.TotalPoints += _orangeBelliedParrot.Value;
+                        Console.WriteLine($"Caught a {_orangeBelliedParrot.Name}!");
+                        Console.Write($"Earned {_orangeBelliedParrot.Value} points!\n");
+                        Console.WriteLine($"Total Points: {_game.TotalPoints}");
+                        Console.WriteLine($"Remaining Lives: {_game.TotalLives}");
+                        Console.Write($"{counter} of {gameEvents.Length}");
+                        Thread.Sleep(500);
+                    }
+
+                    else if (gameEvent.ToLower().Contains("birdhunter"))
+                    {
+                        if (gameEvent.ToLower().Contains("stopper"))
+                        {
+                            Console.BackgroundColor = ConsoleColor.Green;
+                            Console.ForegroundColor = ConsoleColor.Black;
+                            Console.Clear();
+                            Console.WriteLine($"Vulnerable to Bird Hunter: {_birdHunters.IsVulnerable}");
+                            var result = _birdHunters.RunBirdHunterMultiplier();
+                            Console.Write($"Captured Birdhunter! Earned {result} points!\n");
+                            Console.WriteLine($"Total Points: {_game.TotalPoints}");
+                            Console.WriteLine($"Remaining Lives: {_game.TotalLives}");
+                            _game.TotalPoints += result;
+                            Console.Write($"{counter} of {gameEvents.Length}");
+                            Thread.Sleep(500);
+                        }
+                        else
+                        {
+                            Console.BackgroundColor = ConsoleColor.Red;
+                            Console.Clear();
+                            Console.WriteLine($"Vulnerable to Bird Hunter: {_birdHunters.IsVulnerable}");
+                            Console.WriteLine("Birdhunter chomps Drofsnar!");
+                            Console.WriteLine($"Total Points: {_game.TotalPoints}");
+                            Console.WriteLine($"Remaining Lives: {_game.TotalLives}");
+                            Console.Write($"{counter} of {gameEvents.Length}");
+                            _game.TotalLives--;
+                            var result = _game.IsPlayerAlive();
+                            if (result == false)
+                            {
+                                Console.Clear();
+                                Console.WriteLine("Drofsnar is dead!");
+                                Thread.Sleep(1500);
+                                _game.IsAlive = false;
+                                break;
+                            }
+                            Thread.Sleep(500);
+                        }
                     }
                 }
-                ReturnGameResults();
             }
-            return "Game Over!";
+            Console.Clear();
+            ReturnGameResults();
+            Console.WriteLine("Game finished!");
+            Console.ReadLine();
         }
         public void ReturnGameResults()
         {
             Console.WriteLine($"Total Points: {_game.TotalPoints}");
             Console.WriteLine($"Remaining Lives: {_game.TotalLives}");
         }
-    }
 
+        public void InitializeGame()
+        {
+            Console.BackgroundColor = ConsoleColor.Green;
+            Console.ForegroundColor = ConsoleColor.Black;
+            Console.WriteLine($"Starting Points: {_game.TotalPoints} ");
+            Thread.Sleep(1000);
+            Console.WriteLine($"Starting Lives: {_game.TotalLives} ");
+            Thread.Sleep(1000);
+            Console.WriteLine("Drofsnar begins his journey around the world...");
+            Thread.Sleep(2000);
+        }
+    }
 }

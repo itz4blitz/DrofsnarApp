@@ -25,7 +25,7 @@ namespace Drofsnar
 
         public void ExtraLifeEarned(Game currentGame)
         {
-            if(currentGame.TotalPoints <= 10000)
+            if(currentGame.TotalPoints >= 10000)
             {
                 currentGame.TotalLives++;
             }
@@ -34,6 +34,16 @@ namespace Drofsnar
         public void MakePlayerInvincible()
         {
                 IsInvincible = true;
+        }
+
+        public bool IsPlayerAlive()
+        {
+            if (TotalLives == 0)
+            {
+                IsAlive = false;
+                return false;
+            }
+            else return true;
         }
     }
 }
